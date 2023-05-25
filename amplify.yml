@@ -1,0 +1,39 @@
+version: 1
+backend:
+  phases:
+    build:
+      commands:
+        - '# Execute Amplify CLI with the helper script'
+        - '# if no provided environment name, use default env variable, then user override '
+        - |
+          set -xe
+          if [ -n "${AWS_BACKEND_ENVIRONMENT_ARN}" ]; then
+            ENV="${AWS_BACKEND_ENVIRONMENT_ARN##*/}"
+          elif [ -n "${USER_BRANCH}" ]; then
+            ENV="${USER_BRANCH}"
+          else 
+            ENV="${AWS_BRANCH}"
+          fi
+          export ENV
+          if [ "$REMOTE_BACKEND_EXISTS" = "false" ]; then
+            amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
+          else
+            amplify pull --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --no-override --no-codegen --yes  && amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
+          fi
+          set +xe
+        - amplify export --out cdk/lib
+        - cd cdk
+        - npm ci
+        - npx cdk deploy --require-approval never exported-amplify-backend-stack
+
+frontend:
+  phases:
+    build:
+      commands: []
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: /out
+    files:
+      - '**/*'
+  cache:
+    paths: []
