@@ -1,17 +1,23 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as Cdk from '../lib/cdk-stack';
+import * as cdk from 'aws-cdk-lib';
+import {AugmentedAmplifyExportedBackend} from "../lib/AugmentedAmplifyExportedBackend";
+import {EXPORT_PATH} from "../lib/util";
+import {Match, Template} from "aws-cdk-lib/assertions";
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/cdk-stack.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//     // WHEN
-//   const stack = new Cdk.CdkStack(app, 'MyTestStack');
-//     // THEN
-//   const template = Template.fromStack(stack);
+test('Backend Created', () => {
+  const appId = 'testAppId';
+  const env = "testenv"; // Specify your Amplify environment (all lowercase!!)
+  const app = new cdk.App();
+  const backend = new AugmentedAmplifyExportedBackend(app, "testExport", {
+    amplifyEnvironment: env,
+    amplifyAppId: appId,
+    path: EXPORT_PATH
+  });
+  const template = Template.fromStack(backend.cfnInclude.stack);
 
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+  template.hasResource('Custom::AWS', {
+    Properties: {
+      Create: Match.stringLikeRegexp(`.*Amplify.*createBackendEnvironment.*appId.*${appId}.*environmentName.*${env}.*`),
+      Delete: Match.stringLikeRegexp(`.*Amplify.*deleteBackendEnvironment.*appId.*${appId}.*environmentName.*${env}.*`),
+    }
+  });
 });

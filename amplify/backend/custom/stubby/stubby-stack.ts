@@ -1,14 +1,14 @@
-import {RemovalPolicy} from "aws-cdk-lib";
+import {NestedStack, NestedStackProps, RemovalPolicy} from "aws-cdk-lib";
 import {Construct} from "constructs";
 import {AttributeType, StreamViewType, Table} from "aws-cdk-lib/aws-dynamodb";
 import {Function, InlineCode, Runtime, StartingPosition} from "aws-cdk-lib/aws-lambda";
 import {Topic} from "aws-cdk-lib/aws-sns";
 import {DynamoEventSource, SnsDlq} from "aws-cdk-lib/aws-lambda-event-sources";
 
-export interface StubbyProps {
+export interface StubbyProps extends NestedStackProps {
     env: string
 }
-export class StubbyStack extends Construct {
+export class StubbyStack extends NestedStack {
     constructor(scope: Construct, id: string, props?: StubbyProps) {
         super(scope, id);
 

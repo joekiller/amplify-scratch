@@ -22,9 +22,10 @@ backend:
           fi
           set +xe
         - amplify export --out cdk/lib
+        - npm install -g aws-cdk
         - cd cdk
         - npm ci
-        - npx cdk deploy --require-approval never exported-amplify-backend-stack
+        - cdk deploy --require-approval never exported-amplify-backend-stack
 
 frontend:
   phases:

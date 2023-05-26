@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { AmplifyExportedBackend } from '@aws-amplify/cdk-exported-backend'
-import * as path from 'path' // To resolve the path to your exported Amplify backend assets
+import {AugmentedAmplifyExportedBackend} from "../lib/AugmentedAmplifyExportedBackend";
+import {EXPORT_PATH} from "../lib/util"; // To resolve the path to your exported Amplify backend assets
 
+const appId = process.env.AWS_APP_ID || undefined;
+const env = process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev"; // Specify your Amplify environment
 const app = new cdk.App();
-const backend = new AmplifyExportedBackend(app, "exported", {
-    amplifyEnvironment: process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev", // Specify your Amplify environment
-    path: path.resolve(__dirname, '..', 'lib' ,'amplify-export-scratch2')
+new AugmentedAmplifyExportedBackend(app, "exported", {
+    amplifyEnvironment: env,
+    amplifyAppId: appId,
+    path: EXPORT_PATH
 });
-backend.node.children

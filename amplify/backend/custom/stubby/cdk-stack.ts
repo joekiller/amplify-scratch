@@ -13,6 +13,17 @@ export class cdkStack extends cdk.Stack {
       description: 'Current Amplify CLI env name',
     });
 
-    new StubbyStack(this, 'NestedStubbyStack', {env: Fn.ref('env')});
+    new cdk.CfnParameter(this, 'build', {
+      type: 'String',
+      description: 'toggle if resource is built',
+      default: 'False'
+    });
+
+    const buildEnabled = new cdk.CfnCondition(this, 'EnableBuild', {
+      expression: Fn.conditionEquals('True', Fn.ref('build'))
+    })
+    const cfnStack = new StubbyStack(this, 'NestedStubbyStack', {env: Fn.ref('env')});
+    const cfnBucket = cfnStack.node.defaultChild as cdk.CfnStack;
+    cfnBucket.cfnOptions.condition = buildEnabled;
   }
 }
