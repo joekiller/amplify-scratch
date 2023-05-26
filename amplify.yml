@@ -6,7 +6,6 @@ backend:
         - '# Execute Amplify CLI with the helper script'
         - '# if no provided environment name, use default env variable, then user override '
         - |
-          set -xe
           if [ -n "${AWS_BACKEND_ENVIRONMENT_ARN}" ]; then
             ENV="${AWS_BACKEND_ENVIRONMENT_ARN##*/}"
           elif [ -n "${USER_BRANCH}" ]; then
@@ -20,7 +19,6 @@ backend:
           else
             amplify pull --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --no-override --no-codegen --yes  && amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
           fi
-          set +xe
         - amplify export --out cdk/lib
         - npm install -g aws-cdk
         - cd cdk
