@@ -1,4 +1,10 @@
 {
+  "custom": {
+    "stubby": {
+      "providerPlugin": "awscloudformation",
+      "service": "customCDK"
+    }
+  },
   "function": {
     "uno": {
       "build": true,
