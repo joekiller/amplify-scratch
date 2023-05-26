@@ -13,6 +13,6 @@ export class cdkStack extends cdk.Stack {
       description: 'Current Amplify CLI env name',
     });
 
-    new StubbyStack(scope, 'NestedStubbyStack', {env: Fn.ref('env')});
+    new StubbyStack(this, 'NestedStubbyStack', {env: Fn.ref('env')});
   }
 }
