@@ -21,6 +21,10 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
+    ],
+    "rootDirs": [
+      ".",
+      "../amplify/backend/custom/stubby"
     ]
   },
   "exclude": [

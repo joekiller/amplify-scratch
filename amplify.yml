@@ -3,8 +3,8 @@ backend:
   phases:
     build:
       commands:
-        - '# Execute Amplify CLI with the helper script'
-        - '# if no provided environment name, use default env variable, then user override '
+        - npm install -g aws-cdk
+        - cdk --version
         - |
           if [ -n "${AWS_BACKEND_ENVIRONMENT_ARN}" ]; then
             ENV="${AWS_BACKEND_ENVIRONMENT_ARN##*/}"
@@ -19,11 +19,15 @@ backend:
           else
             amplify pull --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --no-override --no-codegen --yes  && amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
           fi
-        - amplify export --out cdk/lib
-        - npm install -g aws-cdk
+        - amplify build
         - cd cdk
-        - npm ci
-        - cdk deploy --require-approval never exported-amplify-backend-stack
+        - npm install
+        - cdk synth
+        - cd ..
+        - cd out
+        - diff ../cdk/cdk.out/CdkStack.template.json ../amplify/backend/custom/stubby/build/stubby-cloudformation-template.json | tee cdk-stack.diff
+        - cd ..
+        - amplify push || echo "oops, look at /out for debug"
 
 frontend:
   phases:

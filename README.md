@@ -1,13 +1,14 @@
-To create:
-1. amplify init
-2. amplify add function #nodejs -> helloworld
-3. mkdir cdk
-4. cdk init app --language typescript
-5. npm i @aws-amplify/cdk-exported-backend
+Create the example [cdk-stack.ts](amplify/backend/custom/stubby/cdk-stack.ts) to create
+a race condition with the Lambda role and policies that allow it to publish the SNS stack.
 
-Current Workarounds going on:
+Typically, the CDK stack will resolve the permissions however if Amplify generates the 
+stacks, the lambda is marked as depending on the policies which it needs to have created
+prior to adding the event source.
 
-`amplifyPush --simple` [isn't so simple].
+With Amplify alone, it's a race to see if the permissions will apply before the lambda is created
+with the event source however typically it'll fail with:
 
+> Resource handler returned message: "Invalid request provided: The provided execution role does not have permissions to call Publish on SNS (Service: Lambda, Status Code: 400, Request ID: abc123)" (RequestToken: abc123, HandlerErrorCode: InvalidRequest)
 
-[isn't so simple]: https://github.com/aws-amplify/amplify-hosting/pull/3493?notification_referrer_id=NT_kwDOAA-bx7I2NTU4NzQxNTAzOjEwMjI5MTk#issuecomment-1563464012
+The [amplify.yml](amplify.yml) includes a build that'll diff the two items.
+
