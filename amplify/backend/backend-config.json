@@ -1,10 +1,23 @@
 {
-  "custom": {
-    "stubby": {
+  "api": {
+    "scratch2": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
       "providerPlugin": "awscloudformation",
-      "service": "customCDK"
+      "service": "AppSync"
     }
   },
+  "custom": {},
   "function": {
     "uno": {
       "build": true,

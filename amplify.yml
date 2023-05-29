@@ -3,8 +3,8 @@ backend:
   phases:
     build:
       commands:
-        - '# Execute Amplify CLI with the helper script'
-        - '# if no provided environment name, use default env variable, then user override '
+        - '# only init the environment so that we may export the infrastructure and deploy it via CDK'
+        - '# use backend env arn or user branch and finally aws branch'
         - |
           if [ -n "${AWS_BACKEND_ENVIRONMENT_ARN}" ]; then
             ENV="${AWS_BACKEND_ENVIRONMENT_ARN##*/}"
@@ -19,11 +19,7 @@ backend:
           else
             amplify pull --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --no-override --no-codegen --yes  && amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
           fi
-        - amplify export --out cdk/lib
-        - npm install -g aws-cdk
-        - cd cdk
-        - npm ci
-        - cdk deploy --require-approval never exported-amplify-backend-stack
+        - npm run deploy
 
 frontend:
   phases:

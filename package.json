@@ -4,7 +4,7 @@
   "description": "Create the example [cdk-stack.ts](amplify/backend/custom/stubby/cdk-stack.ts) to create a race condition with the Lambda role and policies that allow it to publish the SNS stack.",
   "main": "index.js",
   "scripts": {
-    "amplify:stubby": "echo \"I should hook for stubby.\" && exit 0",
+    "deploy": "amplify export --out cdk/lib --yes && cd cdk && npm install && cdk deploy --require-approval never exported-amplify-backend-stack && cd -",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

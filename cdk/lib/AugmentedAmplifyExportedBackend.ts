@@ -4,7 +4,6 @@ import {AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId} from "aw
 import {CfnParameter} from "aws-cdk-lib";
 import {CfnBucket} from "aws-cdk-lib/aws-s3";
 import {CfnRole} from "aws-cdk-lib/aws-iam";
-
 export interface AugmentedAmplifyExportedBackendProps extends AmplifyExportedBackendProps {
     /**
      * The Amplify App ID to associate the backend with.
