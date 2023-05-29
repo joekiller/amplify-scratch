@@ -4,10 +4,12 @@ import {Construct} from "constructs";
 import {GraphqlApi} from "aws-cdk-lib/aws-appsync";
 
 /**
- * use this cdk-stack while https://github.com/aws-amplify/amplify-cli/issues/12702 exists
+ * Use this cdk-stack while https://github.com/aws-amplify/amplify-cli/issues/12702 exists
+ *
+ *
+ * Previously you hooked up the dependencies via the AmplifyDependentResourcesAttributes
  *
  * @example
- * // Previously
  * const dependencies: AmplifyDependentResourcesAttributes = AmplifyHelpers.addResourceDependency(
  *     this,
  *     amplifyResourceProps.category,
@@ -22,6 +24,10 @@ import {GraphqlApi} from "aws-cdk-lib/aws-appsync";
  * const graphqlApi = GraphqlApi.fromGraphqlApiAttributes(this, 'gr', {
  *     graphqlApiId: Fn.ref(dependencies.api.scratch2.GraphQLAPIIdOutput)
  * });
+ *
+ * Now we the stack will pass the {@link AugmentedAmplifyExportedBackend} to the stack
+ * and you can do whatever you need in the cdk-stack similarly to what Amplify custom cdk
+ * stack may provide once some bugs are fixed.
  *
  * @example
  * // Now
