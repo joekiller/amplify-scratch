@@ -2,8 +2,8 @@ import {Construct} from "constructs";
 import {AmplifyExportedBackend, AmplifyExportedBackendProps} from "@aws-amplify/cdk-exported-backend";
 import {AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId} from "aws-cdk-lib/custom-resources";
 import {CfnParameter} from "aws-cdk-lib";
-import {IBucket} from "aws-cdk-lib/aws-s3";
-import {IRole} from "aws-cdk-lib/aws-iam";
+import {CfnBucket} from "aws-cdk-lib/aws-s3";
+import {CfnRole} from "aws-cdk-lib/aws-iam";
 
 export interface AugmentedAmplifyExportedBackendProps extends AmplifyExportedBackendProps {
     /**
@@ -22,10 +22,9 @@ export class AugmentedAmplifyExportedBackend extends AmplifyExportedBackend {
         this.appId = props.amplifyAppId;
 
         // used to emulate the input parameters that the Amplify CLI uses
-        const cfnInclude = this.rootStack.node.findChild('AmplifyCfnInclude');
-        const deploymentBucket = cfnInclude.node.findChild('DeploymentBucket') as IBucket;
-        const authRole = cfnInclude.node.findChild('AuthRole') as IRole;
-        const unauthRole = cfnInclude.node.findChild('UnauthRole') as IRole;
+        const deploymentBucket = this.cfnInclude.getResource('DeploymentBucket') as CfnBucket;
+        const authRole = this.cfnInclude.getResource('AuthRole') as CfnRole;
+        const unauthRole = this.cfnInclude.getResource('UnauthRole') as CfnRole;
         new CfnParameter(this.rootStack, 'AuthRoleName', {
             type: 'String',
             default: authRole.roleName
