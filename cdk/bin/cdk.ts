@@ -9,7 +9,7 @@ if(process.env.REMOTE_BACKEND_EXISTS != null) {
     appId = undefined;
 }
 
-const env = process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev"; // Specify your Amplify environment
+const env = process.env.ENV || process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev"; // Specify your Amplify environment
 const app = new cdk.App();
 new AugmentedAmplifyExportedBackend(app, "exported", {
     amplifyEnvironment: env,
