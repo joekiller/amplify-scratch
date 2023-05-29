@@ -21,14 +21,28 @@ export class AugmentedAmplifyExportedBackend extends AmplifyExportedBackend {
         super(scope, id, props);
         this.appId = props.amplifyAppId;
 
+        // used to emulate the input parameters that the Amplify CLI uses
+        const cfnInclude = this.rootStack.node.findChild('AmplifyCfnInclude');
+        const deploymentBucket = cfnInclude.node.findChild('DeploymentBucket') as IBucket;
+        const authRole = cfnInclude.node.findChild('AuthRole') as IRole;
+        const unauthRole = cfnInclude.node.findChild('UnauthRole') as IRole;
+        new CfnParameter(this.rootStack, 'AuthRoleName', {
+            type: 'String',
+            default: authRole.roleName
+        });
+        new CfnParameter(this.rootStack, 'DeploymentBucketName', {
+            type: 'String',
+            default: deploymentBucket.bucketName
+        });
+        new CfnParameter(this.rootStack, 'UnauthRoleName', {
+            type: 'String',
+            default: unauthRole.roleName
+        });
+
         // just like in amplify env add, we add the backend to the amplify application
         // and then deploy the CFN. This also ensures the amplify env only deletes when
         // the CFN is gone too.
         if(this.appId && this.env) {
-            const cfnInclude = this.rootStack.node.findChild('AmplifyCfnInclude');
-            const deploymentBucket = cfnInclude.node.findChild('DeploymentBucket') as IBucket;
-            const authRole = cfnInclude.node.findChild('AuthRole') as IRole;
-            const unauthRole = cfnInclude.node.findChild('UnauthRole') as IRole;
             new AwsCustomResource(this.rootStack, 'CreateBackendEnvironment', {
                 onCreate: {
                     service: 'Amplify',
@@ -52,18 +66,6 @@ export class AugmentedAmplifyExportedBackend extends AmplifyExportedBackend {
                 policy: AwsCustomResourcePolicy.fromSdkCalls({
                     resources: AwsCustomResourcePolicy.ANY_RESOURCE,
                 }),
-            });
-            new CfnParameter(this.rootStack, 'AuthRoleName', {
-                type: 'String',
-                default: authRole.roleName
-            });
-            new CfnParameter(this.rootStack, 'DeploymentBucketName', {
-                type: 'String',
-                default: deploymentBucket.bucketName
-            });
-            new CfnParameter(this.rootStack, 'UnauthRoleName', {
-                type: 'String',
-                default: unauthRole.roleName
             });
         }
     }
