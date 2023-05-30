@@ -1,0 +1,14 @@
+{
+  "name": "hooks",
+  "version": "1.0.0",
+  "description": "amplify-scratch amplify hooks",
+  "main": "post-pull.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "joekiller",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^10.17.60"
+  }
+}
