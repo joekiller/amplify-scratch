@@ -4,9 +4,10 @@ import * as cdk from 'aws-cdk-lib';
 import {AugmentedAmplifyExportedBackend} from "../lib/AugmentedAmplifyExportedBackend";
 import {EXPORT_PATH} from "../lib/util";
 import {cdkStack} from "../lib/custom/customResourceCDK/cdk-stack";
+import {CfnParameter} from "aws-cdk-lib";
 let appId = process.env.AWS_APP_ID || undefined;
 if(process.env.REMOTE_BACKEND_EXISTS != null) {
-    // this is a Amplify build so avoid messing with the backend
+    // this is an Amplify build so avoid messing with the backend
     appId = undefined;
 }
 
@@ -22,4 +23,4 @@ const backend = new AugmentedAmplifyExportedBackend(app, "exported", {
     }
 });
 // sorta like `amplify add custom` with the resource name customResourceCDK
-new cdkStack(backend.cfnInclude.stack, 'customResourceCDK', {amplifyResources: backend});
+new cdkStack(backend.cfnInclude.stack, 'customResourceCDK', {amplifyResources: backend, env});

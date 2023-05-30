@@ -39,7 +39,7 @@ import {GraphqlApi} from "aws-cdk-lib/aws-appsync";
  * });
  */
 export class cdkStack extends NestedStack {
-    constructor(scope: Construct, id: string, props: StackProps & {amplifyResources: AugmentedAmplifyExportedBackend}) {
+    constructor(scope: Construct, id: string, props: StackProps & {amplifyResources: AugmentedAmplifyExportedBackend, env: string}) {
         super(scope, id, props);
 
         const dependencies = props.amplifyResources;
