@@ -1,6 +1,12 @@
 version: 1
 backend:
   phases:
+    preBuild:
+      commands:
+        - npm install -g aws-cdk
+        - cd cdk
+        - npm ci
+        - cd ..
     build:
       commands:
         - '# only init the environment so that we may export the infrastructure and deploy it via CDK'
