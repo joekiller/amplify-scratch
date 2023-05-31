@@ -17,9 +17,58 @@ is used the init the environment the CDK stack doesn't register the backend with
 environment however if the deployment is out of band of the build, then providing the amplify
 app id will enable the backend to show up in the console.
 
+## Headless Setup
+You may need to adjust the `amplify init` in the build to include [headless Amplify init --categories] .
+
+### missing auth headless params
+If you get an error such as the following you need to include the auth categories headless params.
+>Could not initialize categories for '<envName>': auth headless is missing the following inputParams userPoolId, webClientId, nativeClientId
+
+_"Where did they go?"_
+
+Typically the data is provided from adding a new environment and the cli copies the values, [amplify auth import],
+or perhaps the build has [amplifyPush --simple] and Amplify is secretly replacing the string with the appropriate
+configuration and otherwise you don't know it. Who knows. Let's see how to resolve it...
+
+Example adjustment to backend build commands:
+```yaml
+ - |
+   read -r -d 'END' AUTHCONFIG << EOM
+   {
+      "userPoolId":"${AMPLIFY_USERPOOL_ID:-<yourPool>}",
+      "webClientId":"${AMPLIFY_WEBCLIENT_ID:-<yourWebClient>}",
+      "nativeClientId":"${AMPLIFY_NATIVECLIENT_ID:-<yourNativeId>}"
+   }END
+   EOM
+   read -r -d 'END' CATEGORIES << EOM
+   {
+     "auth":${AUTHCONFIG}
+   }END
+   EOM
+   export CATEGORIES
+  - amplify init ... --categories "${CATEGORIES}" ...;
+```
+
+If you have an identity pool as well include the following in the json structure.
+```yaml
+      "identityPoolId":"${AMPLIFY_IDENTITYPOOL_ID:-<yourIdentityPoolId>}"
+```
+
+To find the values, you can copy them from another team-provider.json, check to see
+if the [amplify auth build variables] are set.
+ 
+If it's really bad, you can unlink and relink following the [amplify auth import] instructions.
+
+You can also view this thread on [amplify-hosting issue #1271] where people express their confusion,
+dissatisfaction, resolutions, workarounds, and otherwise relevant feelings towards this subject. 
+
 ## Working Around Nuance
 There are a number of bugs in Amplify CLI deployment that need to be worked around or nuances
 that this is working around:
  * [amplifyPush --simple].
 
-[amlpifyPush --simple]: https://github.com/aws-amplify/amplify-hosting/pull/3493?notification_referrer_id=NT_kwDOAA-bx7I2NTU4NzQxNTAzOjEwMjI5MTk#issuecomment-1563464012
+[ampifyPush --simple]: https://github.com/aws-amplify/amplify-hosting/pull/3493?notification_referrer_id=NT_kwDOAA-bx7I2NTU4NzQxNTAzOjEwMjI5MTk#issuecomment-1563464012
+[headless Amplify init --categories]: https://docs.amplify.aws/cli/usage/headless/#--categories
+[amplify auth build variables]: https://docs.amplify.aws/cli/auth/import/#add-environmental-variables-to-amplify-console-build
+[amplify auth import]: https://docs.amplify.aws/cli/auth/import/
+[amplify-hosting issue #1271]:https://github.com/aws-amplify/amplify-hosting/issues/1271
