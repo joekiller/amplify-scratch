@@ -10,6 +10,22 @@ adds the correct CfnParams that the CLI would want so once you init an environme
 can interact, checkout, and develop against the environment. Just never push directly and
 instead use the export workflow.
 
+## What is the flow
+1. `amplify init` the env without `--forcePush`. 
+    
+    - This command has Amplify create bucket and auth role names that help the CLI add categories of features to. 
+2. `amplify export --out cdk/lib --yes`
+    - This is nearly the same as Amplify push and in fact, anything that isn't the same is likely a side effect/bug/migration forgotten. 
+
+Now in the `cdk/` dir
+4. `cdk deploy --require-approval never exported-amplify-backend-stack`
+    - Push out the augmented stack that will create the custom CDK resources correctly.
+5. `amplify export pull --rootStackName "amplify-scratch2-dev-12345" --out out --frontend javascript`
+    - Update your `aws-exports.json`.
+
+And no `amplify push` because it'll nuke the CDK custom resource stack we attach. If [amplify-cli issue #12702] is ever
+fixed perhaps this flow will no longer be needed outside [pure CDK pipelining](https://aws.amazon.com/blogs/mobile/export-amplify-backends-to-cdk-and-use-with-existing-deployment-pipelines/).
+
 ## Build
 The [amplify.yml](amplify.yml) should be compatible as is to deploy and work with CDK deployed backends
 that work the same way you would expect from an amplify build otherwise. Because the CLI
@@ -60,15 +76,18 @@ if the [amplify auth build variables] are set.
 If it's really bad, you can unlink and relink following the [amplify auth import] instructions.
 
 You can also view this thread on [amplify-hosting issue #1271] where people express their confusion,
-dissatisfaction, resolutions, workarounds, and otherwise relevant feelings towards this subject. 
+dissatisfaction, resolutions, workarounds, and otherwise relevant feelings towards this subject.
+
+## Frontend 
 
 ## Working Around Nuance
 There are a number of bugs in Amplify CLI deployment that need to be worked around or nuances
 that this is working around:
  * [amplifyPush --simple].
 
-[ampifyPush --simple]: https://github.com/aws-amplify/amplify-hosting/pull/3493?notification_referrer_id=NT_kwDOAA-bx7I2NTU4NzQxNTAzOjEwMjI5MTk#issuecomment-1563464012
+[amplifyPush --simple]: https://github.com/aws-amplify/amplify-hosting/pull/3493?notification_referrer_id=NT_kwDOAA-bx7I2NTU4NzQxNTAzOjEwMjI5MTk#issuecomment-1563464012
 [headless Amplify init --categories]: https://docs.amplify.aws/cli/usage/headless/#--categories
 [amplify auth build variables]: https://docs.amplify.aws/cli/auth/import/#add-environmental-variables-to-amplify-console-build
 [amplify auth import]: https://docs.amplify.aws/cli/auth/import/
 [amplify-hosting issue #1271]:https://github.com/aws-amplify/amplify-hosting/issues/1271
+[amplify-cli issue #12702]:https://github.com/aws-amplify/amplify-cli/issues/12702

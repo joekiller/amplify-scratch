@@ -4,14 +4,17 @@ import * as cdk from 'aws-cdk-lib';
 import {AugmentedAmplifyExportedBackend} from "../lib/AugmentedAmplifyExportedBackend";
 import {EXPORT_PATH} from "../lib/util";
 import {cdkStack} from "../lib/custom/customResourceCDK/cdk-stack";
-import {CfnParameter} from "aws-cdk-lib";
 let appId = process.env.AWS_APP_ID || undefined;
 if(process.env.REMOTE_BACKEND_EXISTS != null) {
     // this is an Amplify build so avoid messing with the backend
     appId = undefined;
 }
+let envName
+try {
+    envName = require('../../amplify/.config/local-env-info.json').envName;
+} catch {}
 
-const env = process.env.ENV || process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev"; // Specify your Amplify environment
+const env = envName || process.env.ENV || process.env.USER_BRANCH || process.env.AWS_BRANCH || "dev"; // Specify your Amplify environment
 const app = new cdk.App();
 const backend = new AugmentedAmplifyExportedBackend(app, "exported", {
     amplifyEnvironment: env,

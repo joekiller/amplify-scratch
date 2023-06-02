@@ -26,6 +26,8 @@ backend:
             amplify pull --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --no-override --no-codegen --yes  && amplify init --amplify "{\"envName\":\"${ENV}\",\"appId\":\"${AWS_APP_ID}\"}" --providers "{\"awscloudformation\":{\"configLevel\":\"project\",\"useProfile\":true,\"profileName\":\"default\"}}" --codegen "{\"generateCode\":false,\"generateDocs\":false}" --yes;
           fi
         - npm run deploy
+        - projectName=$(jq -r '.artifacts."exported-amplify-backend-stack".properties.stackName' cdk/cdk.out/manifest.json)
+        - amplify export pull --rootStackName "${projectName}" --out out --frontend javascript
 
 frontend:
   phases:
