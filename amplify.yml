@@ -3,6 +3,7 @@ backend:
   phases:
     preBuild:
       commands:
+        - yum install jq
         - npm install -g aws-cdk
         - cd cdk
         - npm ci
